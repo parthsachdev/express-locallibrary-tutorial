@@ -1,5 +1,7 @@
 var express = require('express');
 var router = express.Router();
+const validator = require('express-validator');
+
 
 // Require controller modules.
 var book_controller = require('../controllers/bookController');
