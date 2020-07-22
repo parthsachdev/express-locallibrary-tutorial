@@ -42,6 +42,7 @@ exports.book_list = function(req, res, next) {
     Book.find({}, 'title author')
       .populate('author')
       .exec(function (err, list_books) {
+        console.log(list_books)
         if (err) { return next(err); }
         //Successful, so render
         res.render('book_list', { title: 'Book List', book_list: list_books });
@@ -149,14 +150,33 @@ exports.book_create_post = [
 ];
 
 // Display book delete form on GET.
-exports.book_delete_get = function(req, res) {
-    res.send('NOT IMPLEMENTED: Book delete GET');
+exports.book_delete_get = function(req, res, next) {
+    Book.findById(req.params.id)
+        .exec((err, book) => {
+            if (err) { return next(err) }
+            if (book == null) {
+                res.redirect('/catelog/books')
+            }
+            res.render('book_delete', { title: 'Book Author',
+                                        book: book });
+        })
 };
 
 // Handle book delete on POST.
-exports.book_delete_post = function(req, res) {
-    res.send('NOT IMPLEMENTED: Book delete POST');
-};
+exports.book_delete_post = function(req, res, next) {
+    async.parallel({
+        book: function(callback) {
+            Book.findById(req.body.bookid).exec(callback)
+        },
+    }, function(err, results) {
+        if (err) { return next(err); }
+        // Success
+        Book.findOneAndRemove(req.body.bookid, function (err) {
+            if (err) { return next(err); }
+            // Success - go to author list
+            res.redirect('/catalog/books')
+        })
+    });};
 
 // Display book update form on GET.
 exports.book_update_get = function(req, res) {

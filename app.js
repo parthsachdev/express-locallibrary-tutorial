@@ -20,6 +20,7 @@ var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error'));
 db.once('open', () => console.log('Database connected'));
 
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
